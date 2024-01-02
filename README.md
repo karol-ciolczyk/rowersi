@@ -1,4 +1,3 @@
-<<<<<<< HEAD
 # Nuxt 3 Minimal Starter
 
 Look at the [Nuxt 3 documentation](https://nuxt.com/docs/getting-started/introduction) to learn more.
@@ -74,6 +73,4 @@ bun run preview
 ```
 
 Check out the [deployment documentation](https://nuxt.com/docs/getting-started/deployment) for more information.
-=======
 # rowersi
->>>>>>> cc9b28c42e6fa3baf9014901abcc6f0d6e058710

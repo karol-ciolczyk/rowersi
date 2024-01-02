@@ -1,8 +1,4 @@
 <script setup>
-import { ref } from "vue";
-
-const search = ref("");
-
 function clicker() {
   console.log(search);
 }

@@ -14,7 +14,7 @@ export default defineNuxtConfig({
       });
     },
     "@pinia/nuxt",
-    //...
+    "@nuxtjs/axios",
   ],
   vite: {
     plugins: [vuetify()],

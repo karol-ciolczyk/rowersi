@@ -3,6 +3,9 @@ import { ref, onMounted, onUnmounted, watch } from "vue";
 import mapboxgl from "mapbox-gl";
 import directionsStyle from "~/constants/directions-style";
 
+const autocompleteValue = ref("");
+const search = ref("");
+
 let directions: any = null;
 let mapContainer = ref(null);
 mapboxgl.accessToken =
@@ -12,7 +15,6 @@ let map: null | any = null;
 onMounted(() => {
   import("@mapbox/mapbox-gl-directions/dist/mapbox-gl-directions").then(
     (module) => {
-      console.log(directionsStyle);
       const MapboxDirections = module.default;
       const drs = new MapboxDirections({
         accessToken: mapboxgl.accessToken,
@@ -67,12 +69,18 @@ function addRoute(routePoints, waypoints) {
   if (routePoints.origin) {
     directions.setOrigin(routePoints.origin);
     const el = document.createElement("div");
-    el.className = "originElement";
+    el.style.height = "13px";
+    el.style.width = "13px";
+    el.style.backgroundColor = "#fff";
+    el.style.borderRadius = "50%";
+    el.style.border = "2px solid #000";
+
     const coordinates = routePoints.origin;
+
     new mapboxgl.Marker(el)
       .setLngLat(coordinates)
       .setPopup(new mapboxgl.Popup().setHTML("<h1>Hello World!</h1>"))
-      .addTo(map.current);
+      .addTo(map);
   }
   if (routePoints.destination) {
     directions.setDestination(routePoints.destination);
@@ -82,7 +90,7 @@ function addRoute(routePoints, waypoints) {
     })
       .setLngLat(coordinates)
       .setPopup(new mapboxgl.Popup().setHTML("<h1>Hello World!</h1>"))
-      .addTo(map.current);
+      .addTo(map);
   }
   // if (Object.keys(waypoints).length > 0) {
   //   const waypointNumbers = Object.keys(waypoints);
@@ -93,11 +101,37 @@ function addRoute(routePoints, waypoints) {
   //   });
   // }
 }
+
+function inInput(aa: InputEvent) {
+  console.log(aa);
+}
 </script>
 
 <template>
   <div ref="mapContainer" class="map-container" />
-  <v-btn @click="addRoute(sampleRoutePoints, {})">Add Route</v-btn>
+  <v-btn @click="addRoute(sampleRoutePoints, {})">Add Route </v-btn>
+  <div>
+    {{ autocompleteValue }}
+  </div>
+
+  <section>
+    <v-autocomplete
+      v-model="autocompleteValue"
+      v-model:search="search"
+      @input="inInput"
+      clearable
+      chips
+      label="Autocomplete"
+      :items="[
+        'California',
+        'Colorado',
+        'Florida',
+        'Georgia',
+        'Texas',
+        'Wyoming',
+      ]"
+    ></v-autocomplete>
+  </section>
 </template>
 
 <style>
@@ -105,5 +139,13 @@ function addRoute(routePoints, waypoints) {
   height: 80vh;
   width: 100%;
   margin: auto;
+}
+
+.originElement {
+  width: 13px;
+  height: 13px;
+  background-color: #fff;
+  border-radius: 50%;
+  border: 2px solid #000;
 }
 </style>

@@ -13,6 +13,7 @@
   },
   "devDependencies": {
     "@types/mapbox-gl": "^2.7.19",
+    "@pinia/nuxt": "^0.5.1",
     "eslint": "^8.56.0",
     "eslint-config-prettier": "^9.1.0",
     "eslint-plugin-vue": "^9.19.2",

@@ -12,6 +12,7 @@
     "format": "prettier .  --write"
   },
   "devDependencies": {
+    "@types/mapbox-gl": "^2.7.19",
     "eslint": "^8.56.0",
     "eslint-config-prettier": "^9.1.0",
     "eslint-plugin-vue": "^9.19.2",
@@ -26,6 +27,7 @@
     "@mapbox/mapbox-gl-directions": "^4.1.2",
     "@mdi/font": "^7.4.47",
     "@nuxtjs/vuetify": "^1.12.3",
+    "@types/mapbox__mapbox-gl-geocoder": "^4.7.7",
     "mapbox-gl": "^3.0.1"
   }
 }

@@ -1,10 +1,6 @@
 <script setup>
-function clicker() {
-  console.log(search);
-}
-function onNewTrip() {
-  console.log("new trip");
-}
+import { Routing } from "~/constants/Routing";
+
 function onLogin() {
   console.log("login");
 }
@@ -12,8 +8,8 @@ function onLogin() {
 
 <template>
   <v-app-bar app color="primary">
-    <v-app-bar-title class="title" to="/" @click="clicker">
-      Rowersi
+    <v-app-bar-title class="title" to="/">
+      <CommonNuxtLinkPlain :to="Routing.HOME"> Rowersi </CommonNuxtLinkPlain>
     </v-app-bar-title>
 
     <v-spacer></v-spacer>
@@ -21,7 +17,7 @@ function onLogin() {
     <v-app-bar-nav-icon @click="console.log()"></v-app-bar-nav-icon>
 
     <template v-slot:append>
-      <v-btn @click="onNewTrip">New trip</v-btn>
+      <v-btn :to="Routing.NEW_TRIP">New trip</v-btn>
       <v-btn @click="onLogin">Login</v-btn>
     </template>
   </v-app-bar>

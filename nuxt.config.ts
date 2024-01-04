@@ -38,4 +38,14 @@ export default defineNuxtConfig({
       ],
     },
   },
+  // Following rules redirect api calls to avoid CORS browser policy
+  // Now in development process requests to backend api host (https://rowersi-2474fa2672fd.herokuapp.com) should be costructed with http://localhost:3000/api/v1
+  // which be proxied to https://rowersi-2474fa2672fd.herokuapp.com/api/v1/...
+  routeRules: {
+    "/api/v1/**": {
+      proxy: {
+        to: "https://rowersi-2474fa2672fd.herokuapp.com/api/v1/**",
+      },
+    },
+  },
 });

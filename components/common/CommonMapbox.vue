@@ -3,6 +3,10 @@ import { ref, onMounted, onUnmounted, watch } from "vue";
 import mapboxgl from "mapbox-gl";
 import directionsStyle from "~/constants/directions-style";
 
+const employees = useEmployeesStore();
+console.log(employees);
+employees.dispatchGetEmployees();
+
 const autocompleteValue = ref("");
 const search = ref("");
 
@@ -110,6 +114,7 @@ function inInput(aa: InputEvent) {
 <template>
   <div ref="mapContainer" class="map-container" />
   <v-btn @click="addRoute(sampleRoutePoints, {})">Add Route </v-btn>
+  <v-btn @click="employees.dispatchGetEmployees()">Fetch test </v-btn>
   <div>
     {{ autocompleteValue }}
   </div>

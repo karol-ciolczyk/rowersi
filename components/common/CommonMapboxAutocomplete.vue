@@ -2,24 +2,24 @@
 import debounce from "lodash.debounce";
 import type { Place } from "~/services/mapbox/types";
 import { API } from "~/services";
+
+const { index } = defineProps<{
+  index?: number;
+}>();
+const emit = defineEmits<{
+  (
+    e: "setCoordinate",
+    payload: { index: number | undefined; place: typeof place },
+  ): void;
+}>();
 const search = ref<string>("");
-const model = defineModel<Place>();
+const place = ref<Place>();
 let items = ref<Place[]>();
 
-// watch(search, async () => {
-//   const plainText = search.value.replace(
-//     /[^a-zA-Z0-9 śŚńŃęĘąĄćĆżŻźŹłŁóÓ]/g,
-//     "",
-//   );
-//   console.log(plainText);
+watch(place, () => {
+  emit("setCoordinate", { index, place });
+});
 
-//   const { data } = await useFetch(
-//     `https://api.mapbox.com/geocoding/v5/mapbox.places/${plainText}.json?country=pl&access_token=pk.eyJ1Ijoia2FyY2lvIiwiYSI6ImNrcTd6YjExejAxc3kyb3BrcnBzY252em4ifQ.emytj-LkRX7RcGueM2S9HA`,
-//   );
-
-//   items.value = data.value?.features || [];
-//   console.log(items);
-// });
 watch(
   search,
   debounce(async () => {
@@ -30,7 +30,7 @@ watch(
 
     const { data } = await API.mapbox.getPlaces({ search: plainText });
 
-    console.log(data.value?.features);
+    // console.log(data.value?.features);
     items.value = data.value?.features;
   }, 500),
 );
@@ -38,7 +38,7 @@ watch(
 
 <template>
   <v-autocomplete
-    v-model="model"
+    v-model="place"
     v-model:search="search"
     label="Autocomplete"
     item-title="place_name"

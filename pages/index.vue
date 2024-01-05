@@ -1,5 +1,11 @@
 <script setup lang="ts">
+import type { Place } from "~/services/mapbox/types";
+
 const employeesStore = useEmployeesStore();
+
+function onTripCoordinates(places: Ref<Place[]>) {
+  console.log(places);
+}
 </script>
 
 <template>
@@ -12,6 +18,6 @@ const employeesStore = useEmployeesStore();
   >
     Fetch employees
   </v-btn>
-  <CommonMapboxAutocomplete />
-  <TripCreatePointsForm />
+  <!-- <CommonMapboxAutocomplete /> -->
+  <TripCreatePointsForm @trip-coordinates="onTripCoordinates" />
 </template>

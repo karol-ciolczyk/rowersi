@@ -6,7 +6,7 @@ const token =
 
 async function getPlaces(params: getPlacesParams) {
   return await useFetch<MapboxGeocodingApiResponse>(
-    `${process.env.API_MAPBOX_GEOCODING_V5}https://api.mapbox.com/geocoding/v5/mapbox.places/${params.search}.json?country=pl&access_token=${token}`,
+    `https://api.mapbox.com/geocoding/v5/mapbox.places/${params.search}.json?country=pl&access_token=${token}`,
   );
 }
 

@@ -1,14 +1,39 @@
 <script setup lang="ts">
+import type { Place } from "~/services/mapbox/types";
+
 const items = ref(["item0"]);
+const tripCoordinates = ref<Place[]>([]);
+
+const emit = defineEmits<{
+  (e: "tripCoordinates", tripCoordinates: Ref<Place[]>): void;
+}>();
+
+watch(tripCoordinates, () => {
+  emit("tripCoordinates", tripCoordinates);
+});
 
 function addItem() {
   items.value.push("item" + items.value.length);
 }
+function onSetCoordinate({
+  index,
+  place,
+}: {
+  index: number | undefined;
+  place: any;
+}) {
+  console.log(index, place);
+  if (index !== undefined) tripCoordinates.value[index] = place.value;
+}
 </script>
 
 <template>
-  <template :key="item" v-for="item in items">
-    <CommonMapboxAutocomplete />
+  <h1>Create trip</h1>
+  <template :key="item" v-for="(item, index) in items">
+    <CommonMapboxAutocomplete
+      :index="index"
+      @set-coordinate="onSetCoordinate"
+    />
   </template>
   <v-btn @click="addItem">Add point</v-btn>
 </template>

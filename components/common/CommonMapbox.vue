@@ -4,7 +4,6 @@ import mapboxgl from "mapbox-gl";
 import directionsStyle from "~/constants/directions-style";
 
 const employees = useEmployeesStore();
-console.log(employees);
 employees.dispatchGetEmployees();
 
 const autocompleteValue = ref("");
@@ -117,6 +116,9 @@ function inInput(aa: InputEvent) {
   <v-btn @click="employees.dispatchGetEmployees()">Fetch test </v-btn>
   <div>
     {{ autocompleteValue }}
+  </div>
+  <div>
+    {{ employees.getEmployees }}
   </div>
 
   <section>

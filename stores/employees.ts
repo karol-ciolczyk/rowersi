@@ -1,5 +1,6 @@
 import { defineStore } from "pinia";
 import { computed, ref } from "vue";
+import { API } from "~/services";
 
 interface State {
   employees: {}[];
@@ -11,18 +12,16 @@ export const useEmployeesStore = defineStore("employees", {
       employees: [],
     };
   },
+  getters: {
+    getEmployees(): {}[] {
+      return this.employees as {}[];
+    },
+  },
   actions: {
     async dispatchGetEmployees() {
-      const response = await useFetch(
-        "http://localhost:3000/api/v1/employees",
-        {
-          // headers: {
-          //   "Access-Control-Allow-Origin":
-          //     "https://rowersi-2474fa2672fd.herokuapp.com/",
-          // },
-        },
-      );
-      console.log(response);
+      const { data, pending, error, refresh } =
+        await API.employees.getEmployees();
+      if (data.value) this.employees = data.value as {}[];
     },
   },
 });

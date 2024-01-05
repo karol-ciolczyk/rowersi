@@ -3,21 +3,22 @@ import debounce from "lodash.debounce";
 import type { Place } from "~/services/mapbox/types";
 import { API } from "~/services";
 
+const place = ref<Place>();
+const search = ref<string>("");
+let items = ref<Place[]>();
+
 const { index } = defineProps<{
   index?: number;
 }>();
 const emit = defineEmits<{
   (
     e: "setCoordinate",
-    payload: { index: number | undefined; place: typeof place },
+    payload: { index: number | undefined; place: Place | undefined },
   ): void;
 }>();
-const search = ref<string>("");
-const place = ref<Place>();
-let items = ref<Place[]>();
 
-watch(place, () => {
-  emit("setCoordinate", { index, place });
+watch(place, (newPlace) => {
+  emit("setCoordinate", { index, place: newPlace });
 });
 
 watch(

@@ -5,12 +5,16 @@ const items = ref(["item0"]);
 const tripCoordinates = ref<Place[]>([]);
 
 const emit = defineEmits<{
-  (e: "tripCoordinates", tripCoordinates: Ref<Place[]>): void;
+  (e: "tripCoordinates", tripCoordinates: Place[]): void;
 }>();
 
-watch(tripCoordinates, () => {
-  emit("tripCoordinates", tripCoordinates);
-});
+watch(
+  tripCoordinates,
+  (newCoordinates) => {
+    emit("tripCoordinates", newCoordinates);
+  },
+  { deep: true },
+);
 
 function addItem() {
   items.value.push("item" + items.value.length);
@@ -22,8 +26,7 @@ function onSetCoordinate({
   index: number | undefined;
   place: any;
 }) {
-  console.log(index, place);
-  if (index !== undefined) tripCoordinates.value[index] = place.value;
+  if (index !== undefined) tripCoordinates.value[index] = place;
 }
 </script>
 

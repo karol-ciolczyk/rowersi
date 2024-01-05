@@ -3,8 +3,8 @@ import type { Place } from "~/services/mapbox/types";
 
 const employeesStore = useEmployeesStore();
 
-function onTripCoordinates(places: Ref<Place[]>) {
-  console.log(places);
+function onTripCoordinates(places: Place[]) {
+  // console.log(places);
 }
 </script>
 

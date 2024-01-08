@@ -20,7 +20,7 @@ export type Place = {
   place_name: string;
   center: number[];
   geometry: {
-    coordinates: number[];
+    coordinates: [number, number];
     type: string;
   };
   context: [

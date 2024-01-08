@@ -2,8 +2,9 @@
 import { ref, onMounted, onUnmounted, watch } from "vue";
 import mapboxgl from "mapbox-gl";
 import directionsStyle from "~/constants/directions-style";
-import type { Place } from "~/services/mapbox/types";
 import { getWaypointMarker } from "~/utils/helpers/getWaypointMarker";
+import type { Place } from "~/services/mapbox/types/geocodingApi";
+import { API } from "~/services";
 
 const autocompleteValue = ref("");
 const markers = ref<any[]>([]);
@@ -18,58 +19,10 @@ let map: null | any = null;
 function removeRoute() {
   directions.removeRoutes();
   markers.value.forEach((marker) => {
-    console.log(marker);
     marker.remove();
   });
   markers.value = [];
 }
-// function setDestination() {
-//   // Alwernia coordinates
-//   directions.setDestination([19.539674, 50.069043]);
-
-//   const el = getWaypointMarker();
-
-//   new mapboxgl.Marker(el)
-//     .setLngLat([19.539674, 50.069043])
-//     .setPopup(new mapboxgl.Popup().setHTML("<h1>Hello World!</h1>"))
-//     .addTo(map);
-// }
-// const sampleRoutePoints = {
-//   origin: [19.411739, 50.141413],
-//   destination: [19.526844, 50.100241],
-//   destinationName:
-//     "Tenczyńska 86, 32-566 Nieporaz, Lesser Poland Voivodeship, Poland",
-// };
-// function addRoute(routePoints, waypoints) {
-//   directions.removeRoutes(); // must be here to prevent duplicating waypoints
-
-//   if (directions._map?._markers[0]) directions._map._markers[0].remove();
-//   if (routePoints.origin) {
-//     directions.setOrigin(routePoints.origin);
-//     const el = getWaypointMarker();
-
-//     const coordinates = routePoints.origin;
-
-//     markers.value.push(
-//       new mapboxgl.Marker(el)
-//         .setLngLat(coordinates)
-//         .setPopup(new mapboxgl.Popup().setHTML("<h1>Hello World!</h1>"))
-//         .addTo(map),
-//     );
-//   }
-//   if (routePoints.destination) {
-//     directions.setDestination(routePoints.destination);
-//     const coordinates = routePoints.destination;
-//     markers.value.push(
-//       new mapboxgl.Marker({
-//         color: "red",
-//       })
-//         .setLngLat(coordinates)
-//         .setPopup(new mapboxgl.Popup().setHTML("<h1>Hello World!</h1>"))
-//         .addTo(map),
-//     );
-//   }
-// }
 
 onMounted(() => {
   import("@mapbox/mapbox-gl-directions/dist/mapbox-gl-directions").then(
@@ -95,7 +48,7 @@ onMounted(() => {
 
       map = new mapboxgl.Map({
         container: mapContainer.value,
-        style: "mapbox://styles/karcio/ckr3m2igg5uin18p3iolzcdmp", // Replace with your preferred map style
+        style: "mapbox://styles/karcio/ckr3m2igg5uin18p3iolzcdmp",
         center: [19.52, 50.1],
         zoom: 11,
       });
@@ -103,6 +56,17 @@ onMounted(() => {
       const nav = new mapboxgl.NavigationControl();
       map.addControl(nav, "bottom-left");
       map.addControl(drs, "top-left");
+      map.on("style.load", () => {
+        //>> add terrain layer to enable retrieving elevation by method map.queryTerrainElevation(originCoordinates)
+        map.addSource("mapbox-dem", {
+          type: "raster-dem",
+          url: "mapbox://mapbox.mapbox-terrain-dem-v1",
+          tileSize: 512,
+          maxzoom: 20,
+        });
+        map.setTerrain({ source: "mapbox-dem", exaggeration: 1 });
+        //<<
+      });
 
       directions = drs;
     },
@@ -117,35 +81,32 @@ onUnmounted(() => {
 
 watch(
   tripCoordinates,
-  (newCoordinates: Place[]) => {
+  async (newCoordinates: Place[]) => {
     removeRoute();
     const places = [...newCoordinates];
-    const originPoint = places.shift();
-    const destinationPoint = places.pop();
+    const originCoordinates = places.shift()?.geometry.coordinates;
+    const destinationCoordinates = places.pop()?.geometry.coordinates;
     //after shift() and pop() on places array now is array of waypoints between origin and destination
 
-    if (originPoint) {
-      const coordinates = originPoint.geometry.coordinates;
+    if (originCoordinates) {
       const el = getWaypointMarker();
 
-      directions.setOrigin(coordinates);
+      directions.setOrigin(originCoordinates);
       markers.value.push(
         new mapboxgl.Marker(el)
-          .setLngLat(coordinates)
+          .setLngLat(originCoordinates)
           .setPopup(new mapboxgl.Popup().setHTML("<h1>Hello World!</h1>"))
           .addTo(map),
       );
     }
-    if (destinationPoint) {
-      const coordinates = destinationPoint.geometry.coordinates;
-
-      directions.setDestination(coordinates);
+    if (destinationCoordinates) {
+      directions.setDestination(destinationCoordinates);
 
       markers.value.push(
         new mapboxgl.Marker({
           color: "red",
         })
-          .setLngLat(coordinates)
+          .setLngLat(destinationCoordinates)
           .setPopup(new mapboxgl.Popup().setHTML("<h1>Hello World!</h1>"))
           .addTo(map),
       );
@@ -164,20 +125,41 @@ watch(
         );
       });
     }
+    if (originCoordinates && destinationCoordinates) {
+      const { data } = await API.mapbox.getElevation(originCoordinates);
+      if (data.value !== null) {
+        const elevations = data.value.features.map(
+          (elevation) => elevation.properties.ele,
+        );
+        const highestElevetion = Math.max(...elevations);
+        console.log(highestElevetion);
+      }
+
+      // const waypointsCoordinates = places.map(
+      //   (place) => place.geometry.coordinates,
+      // );
+      // const { data: data2 } = await API.mapbox.getDirectionsCycling([
+      //   originCoordinates,
+      //   ...waypointsCoordinates,
+      //   destinationCoordinates,
+      // ]);
+      // console.log(
+      //   data2.value.routes[0].geometry.coordinates.map((coordinates) => {
+      //     console.log(map.queryTerrainElevation(coordinates));
+      //   }),
+      // );
+      // console.log(data2.value);
+    }
   },
   { deep: true },
 );
 function onTripCoordinates(places: Place[]) {
-  console.log(places);
   tripCoordinates.value = places;
 }
 </script>
 
 <template>
   <div ref="mapContainer" class="map-container" />
-  <!-- <v-btn @click="addRoute(sampleRoutePoints, {})">Add Route </v-btn> -->
-  <!-- <v-btn @click="removeRoute">Directions.removeRoute() </v-btn> -->
-  <!-- <v-btn @click="setDestination">Directions.setDestination() </v-btn> -->
   <TripCreatePointsForm @trip-coordinates="onTripCoordinates" />
   <div>
     {{ autocompleteValue }}

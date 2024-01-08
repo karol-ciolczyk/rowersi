@@ -31,7 +31,6 @@ watch(
 
     const { data } = await API.mapbox.getPlaces({ search: plainText });
 
-    // console.log(data.value?.features);
     items.value = data.value?.features;
   }, 500),
 );
@@ -41,11 +40,22 @@ watch(
   <v-autocomplete
     v-model="place"
     v-model:search="search"
-    label="Autocomplete"
     item-title="place_name"
     item-value="place_name"
     :items="items"
     no-filter
     return-object
-  />
+    chips
+    clearable
+  >
+    <template v-slot:append>
+      <slot name="append"></slot>
+    </template>
+    <template v-slot:chip="{ props, item }">
+      <v-chip
+        v-bind="props"
+        :text="item.raw.place_name.slice(0, 39) + '...'"
+      ></v-chip>
+    </template>
+  </v-autocomplete>
 </template>

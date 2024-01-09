@@ -1,7 +1,7 @@
 <script setup lang="ts">
 import type { Place } from "~/services/mapbox/types/geocodingApi";
 
-const props = defineProps<{
+const { places } = defineProps<{
   places: Place[];
 }>();
 const emit = defineEmits<{

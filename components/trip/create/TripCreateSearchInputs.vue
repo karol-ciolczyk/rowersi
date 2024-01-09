@@ -20,7 +20,12 @@ function removeLastInput() {
 
 <template>
   <v-container :style="{ maxWidth: `600px` }">
-    <v-timeline density="compact" side="end" truncate-line="both">
+    <v-timeline
+      :style="{ rowGap: `0px` }"
+      density="compact"
+      side="end"
+      truncate-line="both"
+    >
       <v-timeline-item
         v-for="(input, index) in inputs"
         :key="input"

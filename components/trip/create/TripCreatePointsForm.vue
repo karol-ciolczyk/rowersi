@@ -1,5 +1,7 @@
 <script setup lang="ts">
-import type { Place } from "~/services/mapbox/types";
+import type { Place } from "~/services/mapbox/types/geocodingApi";
+
+const autocompleteItems = ref<{ places: Place[]; index: number }>();
 
 const items = ref(["item0"]);
 const tripCoordinates = ref<Place[]>([]);
@@ -27,15 +29,15 @@ function removeItem() {
     tripCoordinates.value.pop();
   } else items.value.pop();
 }
-function onSetCoordinate({
-  index,
-  place,
-}: {
-  index: number | undefined;
-  place: any;
-}) {
-  if (index !== undefined) tripCoordinates.value[index] = place;
-}
+// function onSetCoordinate({
+//   index,
+//   place,
+// }: {
+//   index: number | undefined;
+//   place: any;
+// }) {
+//   if (index !== undefined) tripCoordinates.value[index] = place;
+// }
 function disableButton(itemsLength: number, coordinatesLength: number) {
   if ((itemsLength === 1 || coordinatesLength === 1) && itemsLength < 2)
     disabled.value = false;
@@ -43,12 +45,19 @@ function disableButton(itemsLength: number, coordinatesLength: number) {
 
   if (itemsLength === coordinatesLength) disabled.value = false;
 }
+function updateSeleted(selection: [{ item: Place; index: number }]) {
+  if (selection) {
+    console.log(selection);
+    tripCoordinates.value[selection[0].index] = selection[0].item;
+  }
+  // autocompleteSelected.value = selection[0];
+}
 </script>
 
 <template>
   <h1>Create trip</h1>
   <v-container :style="{ maxWidth: `600px` }">
-    <v-timeline density="compact" side="end" truncate-line="start">
+    <v-timeline density="compact" side="end" truncate-line="both">
       <v-timeline-item
         :key="item"
         v-for="(item, index) in items"
@@ -59,11 +68,13 @@ function disableButton(itemsLength: number, coordinatesLength: number) {
       >
         <v-row :style="{ width: '600px' }">
           <v-col cols="8">
+            <!-- @set-coordinate="onSetCoordinate" -->
             <CommonMapboxAutocomplete
               :index="index"
-              @set-coordinate="onSetCoordinate"
               variant="solo"
               density="compact"
+              v-model:items="autocompleteItems"
+              v-model:selected="tripCoordinates[index]"
             />
           </v-col>
           <v-col cols="4">
@@ -78,7 +89,24 @@ function disableButton(itemsLength: number, coordinatesLength: number) {
       </v-timeline-item>
     </v-timeline>
   </v-container>
-  <template :key="item" v-for="(item, index) in items">
+  <div>
+    <v-card
+      v-if="autocompleteItems?.places.length"
+      class="mx-auto"
+      max-width="400"
+    >
+      <v-list @update:selected="(selected) => updateSeleted(selected as any)">
+        <v-list-item
+          v-for="item in autocompleteItems?.places"
+          :key="item.id"
+          :value="{ item, index: autocompleteItems?.index }"
+          :title="item.place_name"
+        />
+      </v-list>
+    </v-card>
+  </div>
+
+  <!-- <template :key="item" v-for="(item, index) in items">
     <div>
       <CommonMapboxAutocomplete
         :index="index"
@@ -94,6 +122,6 @@ function disableButton(itemsLength: number, coordinatesLength: number) {
         Remove
       </v-btn>
     </div>
-  </template>
+  </template> -->
   <v-btn @click="addItem" :disabled="disabled">Add point</v-btn>
 </template>

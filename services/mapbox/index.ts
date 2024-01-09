@@ -10,8 +10,6 @@ const token =
   "pk.eyJ1Ijoia2FyY2lvIiwiYSI6ImNrcTd6YjExejAxc3kyb3BrcnBzY252em4ifQ.emytj-LkRX7RcGueM2S9HA";
 
 async function getPlaces(params: getPlacesParams) {
-  console.log(useRuntimeConfig());
-
   return await useFetch<MapboxGeocodingApiResponse>(
     Mapbox.GEOCODING_V5_API +
       `/mapbox.places/${params.search}.json?country=pl&access_token=${token}`,

@@ -1,25 +1,28 @@
 <script setup lang="ts">
 import debounce from "lodash.debounce";
-import type { Place } from "~/services/mapbox/types";
+import type { Place } from "~/services/mapbox/types/geocodingApi";
 import { API } from "~/services";
 
 const place = ref<Place>();
 const search = ref<string>("");
-let items = ref<Place[]>();
+const items = defineModel<{ places: Place[]; index: number }>("items");
+const selected = defineModel<Place>("selected");
 
 const { index } = defineProps<{
-  index?: number;
+  index: number;
+  // showItems?: boolean;
 }>();
-const emit = defineEmits<{
-  (
-    e: "setCoordinate",
-    payload: { index: number | undefined; place: Place | undefined },
-  ): void;
-}>();
+// const emit = defineEmits<{
+// (
+//   e: "setCoordinate",
+//   payload: { index: number | undefined; place: Place | undefined },
+// ): void;
+// (e: "items", payload: { items: Place[] }): void;
+// }>();
 
-watch(place, (newPlace) => {
-  emit("setCoordinate", { index, place: newPlace });
-});
+// watch(place, (newPlace) => {
+//   emit("setCoordinate", { index, place: newPlace });
+// });
 
 watch(
   search,
@@ -31,22 +34,23 @@ watch(
 
     const { data } = await API.mapbox.getPlaces({ search: plainText });
 
-    items.value = data.value?.features;
+    items.value = { places: data.value?.features || [], index };
   }, 500),
 );
 </script>
 
 <template>
   <v-autocomplete
-    v-model="place"
+    v-model="selected"
     v-model:search="search"
     item-title="place_name"
     item-value="place_name"
-    :items="items"
     no-filter
     return-object
     chips
     clearable
+    hide-no-data
+    menu-icon=""
   >
     <template v-slot:append>
       <slot name="append"></slot>

@@ -1,6 +1,10 @@
 <script setup lang="ts">
 import { ref, onMounted, onUnmounted, watch } from "vue";
+//<< Mapbox
 import mapboxgl from "mapbox-gl";
+import polyline from "@mapbox/polyline";
+// const polyline = require("@mapbox/polyline");
+//<<
 import directionsStyle from "~/constants/directions-style";
 import { getWaypointMarker } from "~/utils/helpers/getWaypointMarker";
 import type { Place } from "~/services/mapbox/types/geocodingApi";
@@ -12,9 +16,14 @@ const tripCoordinates = ref<Place[]>([]);
 
 let directions: any = null;
 let mapContainer = ref(null);
+let map: null | any = null;
 mapboxgl.accessToken =
   "pk.eyJ1Ijoia2FyY2lvIiwiYSI6ImNrcTd6YjExejAxc3kyb3BrcnBzY252em4ifQ.emytj-LkRX7RcGueM2S9HA";
-let map: null | any = null;
+const forChartData: {
+  geoJsonGeometry: null | [number, number][];
+} = {
+  geoJsonGeometry: null,
+};
 
 function removeRoute() {
   directions.removeRoutes();
@@ -23,12 +32,13 @@ function removeRoute() {
   });
   markers.value = [];
 }
-
 onMounted(() => {
+  // imported in onMounted because error - "XMLHttpRequest is not defined"
   import("@mapbox/mapbox-gl-directions/dist/mapbox-gl-directions").then(
     (module) => {
       const MapboxDirections = module.default;
-      const drs = new MapboxDirections({
+
+      const mapboxDirections = new MapboxDirections({
         accessToken: mapboxgl.accessToken,
         profile: "mapbox/cycling",
         unit: "metric",
@@ -45,30 +55,35 @@ onMounted(() => {
         },
         zoom: 7,
       });
-
-      map = new mapboxgl.Map({
-        container: mapContainer.value,
-        style: "mapbox://styles/karcio/ckr3m2igg5uin18p3iolzcdmp",
-        center: [19.52, 50.1],
-        zoom: 11,
+      mapboxDirections.on("route", (event) => {
+        forChartData.geoJsonGeometry = polyline.decode(event.route[0].geometry);
       });
-      map.addControl(new mapboxgl.FullscreenControl(), "bottom-left");
-      const nav = new mapboxgl.NavigationControl();
-      map.addControl(nav, "bottom-left");
-      map.addControl(drs, "top-left");
-      map.on("style.load", () => {
-        //>> add terrain layer to enable retrieving elevation by method map.queryTerrainElevation(originCoordinates)
-        map.addSource("mapbox-dem", {
-          type: "raster-dem",
-          url: "mapbox://mapbox.mapbox-terrain-dem-v1",
-          tileSize: 512,
-          maxzoom: 20,
+
+      if (mapContainer.value !== null) {
+        map = new mapboxgl.Map({
+          container: mapContainer.value,
+          style: "mapbox://styles/karcio/ckr3m2igg5uin18p3iolzcdmp",
+          center: [19.52, 50.1],
+          zoom: 11,
         });
-        map.setTerrain({ source: "mapbox-dem", exaggeration: 1 });
-        //<<
-      });
+        map.addControl(new mapboxgl.FullscreenControl(), "bottom-left");
+        const nav = new mapboxgl.NavigationControl();
+        map.addControl(nav, "bottom-left");
+        map.addControl(mapboxDirections, "top-left");
+        map.on("style.load", () => {
+          //>> add terrain layer to enable retrieving elevation by method map.queryTerrainElevation(originCoordinates)
+          map.addSource("mapbox-dem", {
+            type: "raster-dem",
+            url: "mapbox://mapbox.mapbox-terrain-dem-v1",
+            tileSize: 512,
+            maxzoom: 20,
+          });
+          map.setTerrain({ source: "mapbox-dem", exaggeration: 1 });
+          //<<
+        });
+      }
 
-      directions = drs;
+      directions = mapboxDirections;
     },
   );
 });
@@ -126,15 +141,14 @@ watch(
       });
     }
     if (originCoordinates && destinationCoordinates) {
-      const { data } = await API.mapbox.getElevation(originCoordinates);
-      if (data.value !== null) {
-        const elevations = data.value.features.map(
-          (elevation) => elevation.properties.ele,
-        );
-        const highestElevetion = Math.max(...elevations);
-        console.log(highestElevetion);
-      }
-
+      // const { data } = await API.mapbox.getElevation(originCoordinates);
+      // if (data.value !== null) {
+      //   const elevations = data.value.features.map(
+      //     (elevation) => elevation.properties.ele,
+      //   );
+      //   const highestElevetion = Math.max(...elevations);
+      //   console.log(highestElevetion);
+      // }
       // const waypointsCoordinates = places.map(
       //   (place) => place.geometry.coordinates,
       // );

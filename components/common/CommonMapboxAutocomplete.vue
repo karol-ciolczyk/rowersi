@@ -3,26 +3,12 @@ import debounce from "lodash.debounce";
 import type { Place } from "~/services/mapbox/types/geocodingApi";
 import { API } from "~/services";
 
-const place = ref<Place>();
 const search = ref<string>("");
-const items = defineModel<{ places: Place[]; index: number }>("items");
 const selected = defineModel<Place>("selected");
 
-const { index } = defineProps<{
-  index: number;
-  // showItems?: boolean;
+const emit = defineEmits<{
+  (e: "places", payload: Place[]): void;
 }>();
-// const emit = defineEmits<{
-// (
-//   e: "setCoordinate",
-//   payload: { index: number | undefined; place: Place | undefined },
-// ): void;
-// (e: "items", payload: { items: Place[] }): void;
-// }>();
-
-// watch(place, (newPlace) => {
-//   emit("setCoordinate", { index, place: newPlace });
-// });
 
 watch(
   search,
@@ -34,7 +20,7 @@ watch(
 
     const { data } = await API.mapbox.getPlaces({ search: plainText });
 
-    items.value = { places: data.value?.features || [], index };
+    emit("places", data.value?.features || []);
   }, 500),
 );
 </script>

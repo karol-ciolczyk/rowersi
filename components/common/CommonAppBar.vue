@@ -8,13 +8,12 @@ import { Routing } from "~/constants/Routing";
       <CommonNuxtLinkPlain :to="Routing.HOME"> Rowersi </CommonNuxtLinkPlain>
     </v-app-bar-title>
 
-    <v-spacer></v-spacer>
-
-    <v-app-bar-nav-icon @click="console.log()"></v-app-bar-nav-icon>
+    <v-app-bar-nav-icon />
 
     <template v-slot:append>
       <v-btn :to="Routing.NEW_TRIP">New trip</v-btn>
       <v-btn href="/login">Sign in</v-btn>
+      <v-btn>Sign up</v-btn>
     </template>
   </v-app-bar>
 </template>

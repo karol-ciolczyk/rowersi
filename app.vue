@@ -1,7 +1,7 @@
 <template>
   <div>
     <NuxtLayout>
-      <div class="py-10 page-container">
+      <div class="page-container">
         <NuxtPage />
       </div>
     </NuxtLayout>
@@ -10,6 +10,7 @@
 
 <style scoped>
 .page-container {
+  padding-top: 65px;
   height: 100%;
 }
 </style>

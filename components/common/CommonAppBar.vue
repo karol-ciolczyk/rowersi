@@ -1,9 +1,5 @@
 <script setup>
 import { Routing } from "~/constants/Routing";
-
-function onLogin() {
-  console.log("login");
-}
 </script>
 
 <template>
@@ -18,7 +14,7 @@ function onLogin() {
 
     <template v-slot:append>
       <v-btn :to="Routing.NEW_TRIP">New trip</v-btn>
-      <v-btn @click="onLogin">Login</v-btn>
+      <v-btn href="/login">Sign in</v-btn>
     </template>
   </v-app-bar>
 </template>

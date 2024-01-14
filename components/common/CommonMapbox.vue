@@ -25,6 +25,26 @@ const forChartData: {
   geoJsonGeometry: null,
 };
 
+async function testFetchLogin() {
+  await useFetch("/login");
+  console.log("fetch before");
+  const cookie = useCookie("XSRF-TOKEN");
+  console.log(cookie);
+}
+async function getCookie() {
+  const cookie = useCookie("XSRF-TOKEN");
+  console.log(cookie.value);
+
+  const formData = new FormData();
+  formData.append("username", "karcio");
+  formData.append("password", "1q2w3e4r");
+  formData.append(
+    "_csrf",
+    "Naxdb6IwDHvV7s67a_1_RgvEwkG1pDQjHHZZWo0GReYnOzvYDM9tXJcGNUP43K-PU9BLIzry7yDUlQwOeUNsPrtjctdFDAzh",
+  );
+  _csrf: await useFetch("/login", { method: "POST", body: formData });
+}
+
 function removeRoute() {
   directions.removeRoutes();
   markers.value.forEach((marker) => {
@@ -178,6 +198,8 @@ function onTripCoordinates(places: Place[]) {
   <div>
     {{ autocompleteValue }}
   </div>
+  <v-btn @click="testFetchLogin">fetchHHHHH</v-btn>
+  <v-btn @click="getCookie">getCookie</v-btn>
 </template>
 
 <style>

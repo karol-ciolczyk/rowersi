@@ -47,5 +47,10 @@ export default defineNuxtConfig({
         to: "https://rowersi-2474fa2672fd.herokuapp.com/api/v1/**",
       },
     },
+    "/login": {
+      proxy: {
+        to: "http://localhost:8080/login",
+      },
+    },
   },
 });

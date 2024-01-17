@@ -1,5 +1,5 @@
 <script setup lang="ts">
-import type { Place } from "~/services/mapbox/types";
+import type { Place } from "~/services/mapbox/types/geocodingApi";
 
 const employeesStore = useEmployeesStore();
 

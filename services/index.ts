@@ -1,7 +1,9 @@
 import employeesController from "./employees";
-import mapbox from "./mapbox";
+import mapboxController from "./mapbox";
+import usersController from "./users";
 
 export const API = {
-  mapbox: mapbox,
+  mapbox: mapboxController,
   employees: employeesController,
+  users: usersController,
 };

@@ -1,7 +1,11 @@
 import vuetify, { transformAssetUrls } from "vite-plugin-vuetify";
 
 export default defineNuxtConfig({
-  //...
+  runtimeConfig: {
+    public: {
+      API_v1_PREFIX: process.env.API_V1_PREFIX,
+    },
+  },
   build: {
     transpile: ["vuetify"],
   },
@@ -44,12 +48,7 @@ export default defineNuxtConfig({
   routeRules: {
     "/api/v1/**": {
       proxy: {
-        to: "https://rowersi-2474fa2672fd.herokuapp.com/api/v1/**",
-      },
-    },
-    "/login": {
-      proxy: {
-        to: "http://localhost:8080/login",
+        to: `${process.env.ROWERSI_API_V1}/**`,
       },
     },
   },

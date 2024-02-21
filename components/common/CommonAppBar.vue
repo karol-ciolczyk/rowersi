@@ -1,5 +1,11 @@
 <script setup>
 import { Routing } from "~/constants/Routing";
+import { API } from "~/services";
+
+async function test() {
+  const { data } = await API.auth.authInfo();
+  console.log(data);
+}
 </script>
 
 <template>
@@ -12,10 +18,9 @@ import { Routing } from "~/constants/Routing";
 
     <template v-slot:append>
       <v-btn :to="Routing.NEW_TRIP">New trip</v-btn>
-      <v-btn href="https://rowersi-2474fa2672fd.herokuapp.com/login">
-        Sign in
-      </v-btn>
+      <v-btn :to="Routing.SIGN_IN"> Sign in </v-btn>
       <v-btn>Sign up</v-btn>
+      <v-btn @click="test">check auth info </v-btn>
     </template>
   </v-app-bar>
 </template>

@@ -1,4 +1,4 @@
-function signupUser({
+async function signupUser({
   username,
   password,
 }: {

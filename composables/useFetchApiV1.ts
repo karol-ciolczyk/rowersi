@@ -5,7 +5,7 @@ export async function useFetchApiV1<T>(
   endpoint: string | (() => string),
   options: UseFetchOptions<T> = {},
 ) {
-  const token = useCookie("XSRF-TOKEN");
+  // const token = useCookie("XSRF-TOKEN");
   const config = useRuntimeConfig();
 
   let apiUrl;
@@ -17,7 +17,7 @@ export async function useFetchApiV1<T>(
 
   const defaults: UseFetchOptions<T> = {
     // set user token if connected
-    headers: token.value ? { "X-XSRF-TOKEN": token.value } : {},
+    // headers: token.value ? { "X-XSRF-TOKEN": token.value } : {},
   };
   const params = defu(options, defaults);
 
